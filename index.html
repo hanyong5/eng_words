@@ -20,6 +20,10 @@
             transform-style: preserve-3d;
             transition: 0.3s;
         }
+        .view li .num{
+            position: absolute;left: 10px;top: 10px;width: 25px;height: 25px;background: #000;z-index:1;
+            border-radius: 50%;color:white
+        }
         /* .view li:hover{transform:rotateY(180deg);} */
         li.back{transform:rotateY(180deg);}
         .view li div{
@@ -63,7 +67,8 @@
           
            <ul v-if="vWord == 0" class="view">
                <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
-                   <div class="front"><h3>{{wdata[i].words[k].word}}</h3><p>[{{wdata[i].words[k].list}}]</p></div>
+                   <div class="num">{{k+1}}</div>
+                    <div class="front"><h3>{{wdata[i].words[k].word}}</h3><p>[{{wdata[i].words[k].list}}]</p></div>
                    <div class="back">{{wdata[i].words[k].kor}}</div>
                </li>
            </ul>
