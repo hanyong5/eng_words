@@ -26,7 +26,7 @@
             border-radius: 50%;color:white
         }
         /* .view li:hover{transform:rotateY(180deg);} */
-        li.back .front{transform:rotateY(180deg);display: none;}
+        li.back{transform:rotateY(180deg);}
         .view li div{
             position: absolute;width: 100%;height: 100%;
             overflow: hidden;
@@ -39,8 +39,7 @@
         }
         
         .view li div.front h3{margin-bottom: 5px}
-        .view li div.back{font-weight: bold;display: none;}
-        .view li.back div.back{font-weight: bold;display:flex;background: #eee;}
+        .view li div.back{transform:rotateY(180deg) translateZ(5px);backface-visibility:hidden;font-weight: bold;}
 
         #app{padding: 0 16px;}
 
