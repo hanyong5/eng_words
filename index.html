@@ -1,12 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        *{margin: 0;padding: 0;box-sizing: border-box;}
+        li{list-style: none;}
+
+        .nav{display: flex;}
+        .nav li{padding: 10px 16px;cursor:pointer}
+        .nav li.active{background: blueviolet;color:white}
+        .btn-wrap{margin-bottom: 10px;}
+        .view li{
+            height: 100px;
+            border-radius:5px;border: 3px solid #ddd;margin-bottom:5px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: 0.3s;
+        }
+        /* .view li:hover{transform:rotateY(180deg);} */
+        li.back{transform:rotateY(180deg);}
+        .view li div{
+            position: absolute;width: 100%;height: 100%;
+            overflow: hidden;
+            backface-visibility: hidden;
+            display: flex;justify-content: center;align-items: center;
+            text-align: center;
+            flex-direction: column;
+
+        }
+        
+        .view li div.front h3{margin-bottom: 5px}
+        .view li div.back{transform:rotateY(180deg);background: skyblue;font-weight: bold;}
+
+        #app{padding: 0 16px;}
+
+    </style>
 </head>
 <body>
-    
+    <div id="app">
+        
+
+        <ul class="nav">
+            <li v-for="(item,i) in wdata" :key="i" @click="view=i;isActive=i" :class="{active : isActive == i  } ">
+                {{wdata[i].date}}
+            </li>
+        </ul>
+        <div v-if="view == i"  v-for="(item,i) in wdata" :key="i">
+           <!-- {{wdata[i].words[1]}} -->
+         <div class="btn-wrap">
+            <button @click="vWord=0">영어</button>
+            <!-- <button @click="vWord=1">한글</button>
+            <button @click="vWord=2">발음</button> -->
+            <button @click="update">발음랜덤</button>
+         </div>
+
+
+           <h3>no. {{wdata[i].date}}</h3>
+          
+           <ul v-if="vWord == 0" class="view">
+               <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                   <div class="front"><h3>{{wdata[i].words[k].word}}</h3><p>[{{wdata[i].words[k].list}}]</p></div>
+                   <div class="back">{{wdata[i].words[k].kor}}</div>
+               </li>
+           </ul>
+           <ul v-if="vWord == 1">
+            <li v-for="(item,k) in wdata[i].words" :key="k">
+                {{wdata[i].words[k].kor}}
+            </li>
+            </ul>
+            <ul v-if="vWord == 2">
+                <li v-for="(item,k) in wdata[i].words" :key="k">
+                    {{wdata[i].words[k].list}}
+                </li>
+            </ul>
+            <ul v-if="vWord == 3" class="view">
+                <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                    <div class="front"><h3>{{wdata[i].words[wView[k]].list}}</h3></div>
+                   <div class="back"><h3>{{wdata[i].words[wView[k]].word}}</h3>  <p>{{wdata[i].words[wView[k]].kor}}</p></div>
+                </li>
+            </ul>
+
+        </div>
+        
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // import view from data.js;
+        new Vue({
+            el:"#app",
+            data:{
+                //view:"han",
+                view:"0",
+                isActive:0,
+                back:null,
+                backView:true,
+                vWord:0,
+                wView:[],
+                wdata:[
+                    {
+                        idx:1,
+                        date:"52",
+                        words:[
+                            {word:"distribute",kor:"v.분해하다, 분포시키다",list:"디스트리뷰트"},
+                            {word:"emergency",kor:"v.비상사태",list:"이멀전씨"},
+                            {word:"emit",kor:"v.(빛,열,소리 등을) 방출하다",list:"어미트"},
+                            {word:"encounter",kor:"v.(우연히) 만나다 / n.마주침",list:"인카운덜"},
+                            {word:"entrance",kor:"v.기억하다",list:"엔트렌스"},
+                            {word:"envy",kor:"v.기억하다",list:"엔비"},
+                            {word:"estimate",kor:"v.기억하다",list:"에스티메이트"},
+                            {word:"evalute",kor:"v.기억하다",list:"이벨류에이트"},
+                            {word:"evident",kor:"v.기억하다",list:"에비던트"},
+                            {word:"frighten",kor:"v.기억하다",list:"프라이든"},
+                            {word:"fulfill",kor:"v.기억하다",list:"풀필"},
+                            {word:"gear",kor:"v.기억하다",list:"기얼"},
+                            {word:"grant",kor:"v.기억하다",list:"그랜트"},
+                            {word:"guarantee",kor:"v.기억하다",list:"개런티"},
+                            {word:"hesitate",kor:"v.기억하다",list:"헤지테이트"},
+                            {word:"identical",kor:"v.기억하다",list:"아이덴티컬"},
+                            {word:"identify",kor:"v.기억하다",list:"아이덴티파이"},
+                            {word:"impact",kor:"v.기억하다",list:"임펙트"},
+                            {word:"infant",kor:"v.기억하다",list:"인펀트"},
+                            {word:"innocence",kor:"v.기억하다",list:"이너센스"},
+                        ]
+                    },{
+                        idx:2,
+                        date:"53",
+                        words:[
+                            {word:"interpret",kor:"v.통영하다,해석하다",list:"인털프렛"},
+                            {word:"investment",kor:"n.투자",list:"인베스트먼트"},
+                            {word:"location",kor:"n.장소,위치",list:"로케이션"},
+                            {word:"memorize",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"offer",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"organism",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"preceive",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"permanent",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"presuade",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"physics",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"possess",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"principle",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"railroad",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"rainforest",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"rank",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"ray",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"realistic",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"recite",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"region",kor:"v.기억하다",list:"메모라이즈"},
+                            {word:"release",kor:"v.기억하다",list:"메모라이즈"},
+                        ]
+                    }
+                ]
+
+            },
+            methods:{
+                update(){
+                    this.vWord = 3;
+
+
+                    this.wView = [];
+                    for (var i = 0; i < this.wdata[0].words.length; i++) {
+                        var num = Math.floor(Math.random() * this.wdata[0].words.length);
+                        if(this.wView.indexOf(num) === -1){
+                            this.wView.push(num);
+                        }else{
+                            i--;
+                        }
+                    }
+                },
+                myClick(k){
+                    //this.back = k;
+
+                   if(this.back == k){
+                       this.back = null
+                   }else{
+                    this.back = k;
+                   }
+                    
+                    //document.querySelector(".view li").classList.remove("back");
+                        // if( this.backView == true){
+                        //     this.back = k;
+                        //     this.backView = false;
+                        // }else{
+                        //     document.querySelector(".view li").classList.remove("back");
+                            
+                        //     this.backView = true
+                        // }
+                    
+
+
+                    //this.back = k;
+                    console.log( k )
+                }
+            }
+          
+        })
+    </script>
 </body>
 </html>
