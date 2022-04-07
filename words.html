@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        
+
+        .nav{display: flex;overflow-x:auto ;}
+        .nav li{padding: 10px 15px;cursor:pointer;font-size: 2em;font-weight: bold;}
+        .nav li.active{background: blueviolet;color:white}
+        .btn-wrap{margin-bottom: 10px;display: flex;}
+        .btn-wrap div{padding: 10px 20px;background:white;color:white;margin-right:5px;color:black}
+        .btn-wrap div.tactive{background: skyblue;}
+        .view li{
+            height: 100px;
+            border-radius:5px;border: 3px solid #ddd;margin-bottom:5px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: 0.3s;
+        }
+        .view li .num{
+            position: absolute;left: 10px;top: 10px;width: 25px;height: 25px;background: #000;z-index:1;
+            border-radius: 50%;color:white
+        }
+        .view li .num.red{background: red;}
+        /* .view li:hover{transform:rotateY(180deg);} */
+        li.back{transform:rotateY(180deg);}
+        .view li div{
+            position: absolute;width: 100%;height: 100%;
+            overflow: hidden;
+            backface-visibility:hidden;
+            display: flex;justify-content: center;align-items: center;
+            text-align: center;
+            flex-direction: column;
+            background: white;
+
+        }
+        
+        .view li div.front h3{margin-bottom: 5px;font-size: 2em;}
+        .view li div.back{transform:rotateY(180deg) translateZ(5px);backface-visibility:hidden;font-weight: bold;font-size: 1.3em;}
+
+        #app{padding: 0 16px;}
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        
+
+        <ul class="nav">
+            <li v-for="(item,i) in wdata" :key="i" @click="view=i;isActive=i" :class="{active : isActive == i  } ">
+                {{wdata[i].date}}
+            </li>
+        </ul>
+        <div v-if="view == i"  v-for="(item,i) in wdata" :key="i">
+           <!-- {{wdata[i].words[1]}} -->
+         <div class="btn-wrap">
+            <div @click="vWord=0" :class="{tactive:vWord==0}">영어</div>
+            <!-- <button @click="vWord=1">한글</button>
+            <button @click="vWord=2">발음</button> -->
+            <div @click="update" :class="{tactive:vWord==3}">발음랜덤</div>
+         </div>
+
+
+           <h3>no. {{wdata[i].date}}</h3>
+          
+           <ul v-if="vWord == 0" class="view">
+               <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                   <div class="num">{{k+1}}</div>
+                    <div class="front"><h3>{{wdata[i].words[k].word}}</h3><p>[{{wdata[i].words[k].list}}]</p></div>
+                   <div class="back">{{wdata[i].words[k].kor}}</div>
+               </li>
+           </ul>
+           <ul v-if="vWord == 1">
+            <li v-for="(item,k) in wdata[i].words" :key="k">
+                {{wdata[i].words[k].kor}}
+            </li>
+            </ul>
+            <ul v-if="vWord == 2">
+                <li v-for="(item,k) in wdata[i].words" :key="k">
+                    {{wdata[i].words[k].list}}
+                </li>
+            </ul>
+            <ul v-if="vWord == 3" class="view">
+                <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                    <div class="num red">{{k+1}}</div>
+                    <div class="front"><h3>{{wdata[i].words[wView[k]].list}}</h3></div>
+                   <div class="back"><h3>{{wdata[i].words[wView[k]].word}}</h3>  <p>{{wdata[i].words[wView[k]].kor}}</p></div>
+                </li>
+            </ul>
+
+        </div>
+        
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+    <div class="container fixed-bottom bg-info">
+        <div class="row text-center">
+            <div class="col"><a href="index.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-house mb-1"></i> home</a></div>
+            <div class="col"><a href="eng.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-map mb-1"></i> eng</a></div>
+            <div class="col"><a href="words.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-book-open mb-1"></i> words</a></div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // import view from data.js;
+        new Vue({
+            el:"#app",
+            data:{
+                //view:"han",
+                view:"0",
+                isActive:0,
+                back:null,
+                backView:true,
+                vWord:0,
+                tactive:0,
+                wView:[],
+                wdata:[
+                    {
+                        idx:1,
+                        date:"1",
+                        words:[
+                            {word:"cattle",kor:"n.소",list:"케들"},
+                            {word:"celebrate",kor:"v.경축하다,찬양하다",list:"셀러브레이트"},
+                            {word:"central",kor:"a.중앙의, 중심적인",list:"센트럴"},
+                            {word:"certain",kor:"a.확실한, 일정한",list:"썰든"},
+                            {word:"charity",kor:"n.자비, 자선",list:"차리다"},
+                            {word:"cheat",kor:"n.속임수, v.기만하다, 속이다",list:"취트"},
+                            {word:"cheek",kor:"n.뺨, 볼",list:"칰"},
+                            {word:"chemical",kor:"n.화학, a.화학의",list:"케미컬"},
+                            {word:"childhood",kor:"n.어린시절",list:"차일드훗"},
+                            {word:"chore",kor:"n.잡일, 허드렛일",list:"초어"},
+                            {word:"clue",kor:"n.실마리, 단서",list:"클루"},
+                            {word:"compact",kor:"v.압축하다, a.밀집한",list:"컴팩트"},
+                            {word:"complaint",kor:"n.불평",list:"컴플레이트"},
+                            {word:"complete",kor:"v.완성하다, a.완전한",list:"컴플리트"},
+                            {word:"comprehension",kor:"n.이해, 이해력",list:"컴프리헨션"},
+                            {word:"conductor",kor:"n.안내자, 지휘자",list:"컨덜턱"},
+                            {word:"conference",kor:"n.회당, 회의",list:"컨퍼런스"},
+                            {word:"contact",kor:"n.접촉, 교재, v. 접촉하다,교제하다",list:"컨텍트"},
+                            {word:"contain",kor:"v.포함하다",list:"컨테인"},
+                            {word:"control",kor:"n.지배, v.통제하다, 억제하다",list:"컨트롤"},
+                        ]
+                    },
+                    {
+                        idx:2,
+                        date:"2",
+                        words:[
+                            {word:"convenient",kor:"a.편리한",list:"컨비니언트"},
+                            {word:"cope",kor:"v.대처하다, 극복하다",list:"코프"},
+                            {word:"correct",kor:"v.고치다, a.옳은, 정확한",list:"코렉트"},
+                            {word:"cradle",kor:"n.요람",list:"크레이들"},
+                            {word:"crazy",kor:"a.미친",list:"크레이지"},
+                            {word:"create",kor:"v.창조하다, 고안하다",list:"크리에이트"},
+                            {word:"credit",kor:"n.신용거래, 칭찬 v.믿다",list:"크레딜"},
+                            {word:"cricket",kor:"n.크리켓",list:"크리켙"},
+                            {word:"crosswalk",kor:"n.횡단보도",list:"크로스워크"},
+                            {word:"crumb",kor:"n.작은조각, 빵부스러기",list:"크럼브"},
+                            {word:"dash",kor:"v.돌진하다, 내던지다",list:"대쉬"},
+                            {word:"debate",kor:"n.토론, 논쟁, v.숙고하다, 토론하다",list:"디베이트"},
+                            {word:"deceive",kor:"v.속이다",list:"디씨브"},
+                            {word:"decline",kor:"v.기울다, 사절하다",list:"디클라인"},
+                            {word:"decoration",kor:"n.장식, 훈장",list:"데코레이션"},
+                            {word:"definition",kor:"n.정의, 한정",list:"데피니션"},
+                            {word:"depart",kor:"v.출발하다",list:"디팥트"},
+                            {word:"depend",kor:"v.의지하다, 믿다",list:"디펜드"},
+                            {word:"depressed",kor:"a.우울한, 침체된",list:"디프레스드"},
+                            {word:"depression",kor:"n.우울, 불경기",list:"디프레션"},
+                        ]
+                    },
+                    {
+                        idx:3,
+                        date:"3",
+                        words:[
+                            {word:"dept",kor:"n.깊이, 깊음",list:"뎁트"},
+                            {word:"descendant",kor:"n.자손, 후예",list:"디센던트"},
+                            {word:"difficulty",kor:"n.어려움, 곤란",list:"디피컬티"},
+                            {word:"diligent",kor:"a.근면한, 부지런한",list:"딜리전트"},
+                            {word:"dimension",kor:"n.치수, 규모, 차원",list:"디멘션"},
+                            {word:"direction",kor:"n.방향, 지도, 감독",list:"디렉션"},
+                            {word:"disagree",kor:"v.의견이 다르다",list:"디스어그리"},
+                            {word:"disapper",kor:"v.사라지다",list:"디싸피얼"},
+                            {word:"discover",kor:"v.발견하다",list:"디쓰커벌"},
+                            {word:"disqusting",kor:"a.정말 싫은, 구역질나는",list:"디스거스팅"},
+                            {word:"dislike",kor:"v.싫어(미워)하다",list:"디스라이크"},
+                            {word:"distance",kor:"n.거리, 간격",list:"디스턴스"},
+                            {word:"dizzy",kor:"a.현기증 나는, v.현기증 나게하다",list:"디지"},
+                            {word:"doubt",kor:"n.의심, 의혹, a.의심하다",list:"다우트"},
+                            {word:"dough",kor:"n.가루 반죽",list:"도우"},
+                            {word:"earmuff",kor:"n.귀덮개.",list:"이얼머프"},
+                            {word:"earn",kor:"v.(생활비를)벌다, 획득하다",list:"언"},
+                            {word:"education",kor:"n.교육, 양성",list:"에듀케이션"},
+                            {word:"effect",kor:"n.효과, 영향, v.초래하다",list:"이펙트"},
+                            {word:"elbow",kor:"n.팔꿈치",list:"엘보우"},
+                        ]
+                    },
+                    {
+                        idx:4,
+                        date:"4",
+                        words:[
+                            {word:"electronic",kor:"a.전자(학)의",list:"일렉트로닉"},
+                            {word:"emperor",kor:"v.제왕, 황제",list:"엠퍼럴"},
+                            {word:"endangered",kor:"a.멸종위기에 처한",list:"인대인셜드"},
+                            {word:"entrance",kor:"n.입장, 입구",list:"엔트런스"},
+                            {word:"erupt",kor:"v.분출하다",list:"이럽트"},
+                            {word:"evil",kor:"a.나쁜, 사악한",list:"이블"},
+                            {word:"exactly",kor:"ad.정확하게, 엄밀히",list:"이그넥들리"},
+                            {word:"exist",kor:"v.존재하다, 생존하다",list:"익그스트"},
+                            {word:"expect",kor:"v.기대하다",list:"익스펙트"},
+                            {word:"experiment",kor:"n.실험, 시험",list:"익스페러먼트"},
+                            {word:"fable",kor:"n.우화, 전설, 꾸며낸 이야기",list:"페이블"},
+                            {word:"factual",kor:"a.사실의, 실제의",list:"펙츄얼"},
+                            {word:"failure",kor:"n.실패, 부족, 쇠약",list:"페일리얼"},
+                            {word:"fashionable",kor:"a.유행의, 유행을 따른",list:"패셔너블"},
+                            {word:"fasten",kor:"v.묶다, 고정하다",list:"파슨"},
+                            {word:"favor",kor:"n.호의, 부탁 v. 호의를 보이다",list:"페이벌"},
+                            {word:"fellowship",kor:"n.단체, 학회 회원",list:"펠로우쉽"},
+                            {word:"figure",kor:"n.숫자 모양, 인물",list:"피규얼"},
+                            {word:"flavor",kor:"n.맛, 조미료,v.~에 맛을 내다",list:"플레이벌"},
+                            {word:"flight",kor:"n.비상, 비행",list:"플라이트"},
+                        ]
+                    },
+                    {
+                        idx:5,
+                        date:"7",
+                        words:[
+                            {word:"invite",kor:"v.초청하다, 권유하다,",list:"인바이트"},
+                            {word:"issue",kor:"n.발행, 논쟁, v.발행하다",list:"이슈"},
+                            {word:"jury",kor:"n.배심, 심사원",list:"져리"},
+                            {word:"kindness",kor:"n.친절, 호의, 친절한 행위",list:"카읻네스"},
+                            {word:"kingdom",kor:"n.왕국",list:"킹덤"},
+                            {word:"knot",kor:"n.매듭, v.매다",list:"낫트"},
+                            {word:"knowledge",kor:"n.지식, 학식",list:"널리쥐"},
+                            {word:"labor",kor:"n.노동, 노동자",list:"레이벌"},
+                            {word:"lamb",kor:"n.어린양",list:"램"},
+                            {word:"lawn",kor:"n.잔디(밭)",list:"론"},
+                            {word:"lawyer",kor:"n.법률가, 변호사",list:"로이열"},
+                            {word:"least",kor:"n.최소, 최저, a.가장 작은(적은)",list:"리스트"},
+                            {word:"lend",kor:"v.빌려주다",list:"렌드"},
+                            {word:"length",kor:"n.길이",list:"렝뜨"},
+                            {word:"level",kor:"n.수평, 수준",list:"레벨"},
+                            {word:"liberty",kor:"n.자유",list:"리벌디"},
+                            {word:"lifetime",kor:"n.일생, a.생애의",list:"라이프타임"},
+                            {word:"lift",kor:"v.향상시키다, 들어 올리다",list:"리프트"},
+                            {word:"likely",kor:"a.그럴듯한, 할것 같은",list:"라이클리"},
+                            {word:"load",kor:"n.짐, v.짐을 싣다",list:"로드"},
+                        ]
+                    },
+                    {
+                        idx:6,
+                        date:"8",
+                        words:[
+                            {word:"local",kor:"a.장소의, 지방의",list:"로컬"},
+                            {word:"lower",kor:"v.난추다, a.낮은(아래) 쪽의",list:"로월"},
+                            {word:"loyal",kor:"a.성실한, 충실한",list:"로얄"},
+                            {word:"lump",kor:"n.덩어리, 혹",list:"럼프"},
+                            {word:"lunar",kor:"a.달의 태음의",list:"루널"},
+                            {word:"magazine",kor:"n.잡지",list:"매가진"},
+                            {word:"mainly",kor:"ad. 주로, 대게",list:"메인리"},
+                            {word:"major",kor:"a.주요한, 큰",list:"메이절"},
+                            {word:"marriage",kor:"n.결혼",list:"메리쥐"},
+                            {word:"mayor",kor:"n.시장, 읍장",list:"메이얼"},
+                            {word:"measure",kor:"n.측정, 수단, v.측정하다",list:"미졀"},
+                            {word:"medium",kor:"n.중간, 매개물, a.중간의",list:"미디엄"},
+                            {word:"merry",kor:"a.명랑한, 축제 기분의",list:"메리"},
+                            {word:"mess",kor:"n.혼란, 어수선함, 불결",list:"메쓰"},
+                            {word:"message",kor:"n.전갈, 통신(문)",list:"메쎄쥐"},
+                            {word:"microphone",kor:"n.마이크",list:"마이크로폰"},
+                            {word:"microscope",kor:"n.현미경",list:"마이크로스코프"},
+                            {word:"mild",kor:"a.온순한, 따뜻한",list:"마일드"},
+                            {word:"mission",kor:"n.임무, 사명",list:"미션"},
+                            {word:"mistake",kor:"n.잘못, 틀림",list:"미스테이크"},
+                        ]
+                    },
+
+                    {
+                        idx:2,
+                        date:"54",
+                        words:[
+                            {word:"rely",kor:"v.의지하다",list:"릴라이"},
+                            {word:"request",kor:"n.요청,v.요청하다",list:"리퀘스트"},
+                            {word:"resist",kor:"v.저항하다",list:"뤼지스트"},
+                            {word:"resolve",kor:"v.결심하다, 분해하다",list:"뤼솔브"},
+                            {word:"restrict",kor:"v.제한하다, 한정하다",list:"리스트릭트"},
+                            {word:"retire",kor:"v.은퇴하다",list:"리타이얼"},
+                            {word:"rid",kor:"v.제거하다",list:"리드"},
+                            {word:"sake",kor:"n.위함, 목적",list:"세이크"},
+                            {word:"scale",kor:"n.저울, 규모, 비늘",list:"스케일"},
+                            {word:"secretary",kor:"n.서기관,장관, 비서",list:"세크리터리"},
+                            {word:"seldom",kor:"ad.좀처럼 ~않는",list:"셀덤"},
+                            {word:"slave",kor:"n.노예",list:"슬레이브"},
+                            {word:"standard",kor:"n.기준, 표준, v.기준의, 표준의",list:"스탠달드"},
+                            {word:"stink",kor:"v.역겹다, 악취가 나다",list:"스팅크"},
+                            {word:"substance",kor:"n.물질, 실체, 본질",list:"셉스텐스"},
+                            {word:"suitable",kor:"a.적절한, 적합한",list:"수더블"},
+                            {word:"symphony",kor:"n.교향곡, 조화음",list:"심포니"},
+                            {word:"theme",kor:"n.주제, 화제, 논제",list:"띰"},
+                            {word:"tremendous",kor:"a.굉장한, 무시무시한",list:"트리멘더스"},
+                            {word:"vote",kor:"n.투표, v.투표하다.",list:"보트"},
+                        ]
+                    },{
+                        idx:2,
+                        date:"55",
+                        words:[
+                            {word:"accept",kor:"v.받아들이다. (설명, 학설 등을)인정하다.",list:"어셉트"},
+                            {word:"achieve",kor:"v.목적을 이루다, (명성을) 얻다",list:"어치브"},
+                            {word:"agriculture",kor:"n.농업",list:"애그리컬쳐"},
+                            {word:"annual",kor:"a.연례의, 1년의, 1년간의",list:"애뉴얼"},
+                            {word:"apparent",kor:"a.분명한, 명백한",list:"어페어런트"},
+                            {word:"ashamed",kor:"a.부끄러워하는",list:"어셰임드"},
+                            {word:"awake",kor:"v.깨우다, 깨어나다, a.깨어 있는",list:"어웨이크"},
+                            {word:"brilliant",kor:"a.찬란한, 명석한",list:"블릴리언트"},
+                            {word:"broad",kor:"a.넓은, 광범위한",list:"브로드"},
+                            {word:"cancel",kor:"v.취소하다.",list:"캔슬"},
+                            {word:"chapter",kor:"n.(책, 논문의)장",list:"챕털"},
+                            {word:"civil",kor:"a.시민의, 민간의",list:"시빌"},
+                            {word:"commit",kor:"v.(죄를) 저지르다, 맡기다, 약속하다",list:"커밋트"},
+                            {word:"companion",kor:"n.동반자, 동료",list:"컴페니언"},
+                            {word:"compete",kor:"v.경쟁하다",list:"컴피트"},
+                            {word:"complicated",kor:"a.복잡한",list:"컴플리케이티드"},
+                            {word:"component",kor:"n.구성요소, a.구성하고 있는",list:"컴포넌트"},
+                            {word:"concept",kor:"n.개념",list:"컨셉트"},
+                            {word:"conserve",kor:"v.보존하다",list:"컨절브"},
+                            {word:"continue",kor:"v.계속하다",list:"컨티뉴"},
+                        ]
+                    },{
+                        idx:3,
+                        date:"56",
+                        words:[
+                            {word:"current",kor:"n.해류, 흐름, a.현재의",list:"커렌트"},
+                            {word:"democarcy",kor:"n.민주주의, 민주주의 국가",list:"디모크래시"},
+                            {word:"demonstrate",kor:"v.설명하다, 녽으하다, 보여주다",list:"데몬스트레이트"},
+                            {word:"dense",kor:"a.밀집한, 조밀한",list:"덴스"},
+                            {word:"depature",kor:"n.출발",list:"디파츄얼"},
+                            {word:"depend",kor:"v.의지하다",list:"디펜드"},
+                            {word:"descend",kor:"v.내려오다, 물려주다",list:"디쎈드"},
+                            {word:"desperate",kor:"a.필사적인, 절망적인",list:"데스펄레트"},
+                            {word:"destination",kor:"n.목적지",list:"데스티네이션"},
+                            {word:"diligent",kor:"a.근면한",list:"딜리전트"},
+                            {word:"distinct",kor:"a.별개의, 뚜렷한",list:"디스팅트"},
+                            {word:"eager",kor:"a.갈망하는",list:"이걸"},
+                            {word:"evolution",kor:"n.진화",list:"에볼루션"},
+                            {word:"expand",kor:"v.확장하다",list:"익스펜드"},
+                            {word:"extinct",kor:"a.멸종된, 꺼진",list:"익스팅트"},
+                            {word:"faith",kor:"n.믿음, 신념",list:"페이쓰"},
+                            {word:"falsify",kor:"v.(문서를) 위조하다",list:"폴시파이"},
+                            {word:"formal",kor:"a.공식적인, 정식의",list:"포멀"},
+                            {word:"genuine",kor:"a.진짜의, 성실한",list:"제뉴인"},
+                            {word:"gravity",kor:"n.중력",list:"그레비티"},
+                        ]
+                    }
+                    ,{
+                        idx:4,
+                        date:"57",
+                        words:[
+                            {word:"household",kor:"n.가정, 가족, a.가정의, 가족의",list:"하우스홀드"},
+                            {word:"ignorant",kor:"a.모르는, 무식한",list:"이그노런트"},
+                            {word:"insight",kor:"n.통찰,통찰력",list:"인사이트"},
+                            {word:"institute",kor:"n.연구소, 협회,v.설립하다, 제정하다",list:"인스티뉴트"},
+                            {word:"invitation",kor:"n.초대, 초대장",list:"인비테이션"},
+                            {word:"isolate",kor:"v.고립시키다",list:"아이솔레이트"},
+                            {word:"lately",kor:"ad.최근에",list:"레일리"},
+                            {word:"leak",kor:"n.새는 구멍,v.새다, 누설하다",list:"리크"},
+                            {word:"legal",kor:"a.법률의, 합법의",list:"리걸"},
+                            {word:"logic",kor:"n.논리, 놀리학",list:"로직"},
+                            {word:"mature",kor:"a.익은, 성숙한, 지불 만기의, v.성숙해지다",list:"머츄얼"},
+                            {word:"military",kor:"a.군대의, n.군대",list:"밀리터리"},
+                            {word:"offend",kor:"v.감정을 상하게 한다, (범죄를) 저지르다",list:"어펜드"},
+                            {word:"oppose",kor:"v.반대하다",list:"어포즈"},
+                            {word:"particle",kor:"n.입자, 극소량, 미량",list:"파디클"},
+                            {word:"portion",kor:"n.일부, 부분,v.분할하다",list:"폴션"},
+                            {word:"poverty",kor:"n.비곤, 가난",list:"퍼벌티"},
+                            {word:"precise",kor:"a.정확한",list:"프리사이즈"},
+                            {word:"prove",kor:"v.입증하다, ~으로 판명되다",list:"프루브"},
+                            {word:"pure",kor:"a.순수한",list:"퓨얼"},
+                        ]
+                    },
+                     {
+                        idx:5,
+                        date:"58",
+                        words:[
+                            {word:"receive",kor:"v.받다",list:"리씨브"},
+                            {word:"refrigerator",kor:"n.냉장고",list:"뤼프리지레이덜"},
+                            {word:"refund",kor:"n.환불, 반환, v.환불하다. 반환하다",list:"리펀드"},
+                            {word:"remote",kor:"a.멀리 떨어진, 희박한, 드문",list:"리모트"},
+                            {word:"reproduce",kor:"v.재생하다, 번식하다, 복제하다",list:"리프리듀스"},
+                            {word:"rescue",kor:"n.구조, v.구조하다, a.구조의",list:"레스큐"},
+                            {word:"rite",kor:"n.(종교적) 의식, 의례",list:"라이트"},
+                            {word:"sculpture",kor:"n.조각, v.조각하다",list:"스컲쳐"},
+                            {word:"sensible",kor:"a.분별 있는, 현명한",list:"센써블"},
+                            {word:"spare",kor:"v.(시간, 돈을)할애하다, a.여분의, 예비용의",list:"스페얼"},
+                            {word:"status",kor:"n.지위, 현상, 상태",list:"스테더스"},
+                            {word:"sum",kor:"n.합계, 총합",list:"썸"},
+                            {word:"swing",kor:"n.그네, v.흔들(리)다, 진동하다",list:"스윙"},
+                            {word:"tone",kor:"n.어조, 말투, 음, 색죠",list:"톤"},
+                            {word:"transfer",kor:"v.이동하다, 옮기다, 갈아타다",list:"트렌스펄"},
+                            {word:"trap",kor:"n.한정, v.덫을 놓다, 막다",list:"트랩"},
+                            {word:"universal",kor:"a.보편적인, 우주의",list:"유니벌썰"},
+                            {word:"vigor",kor:"n.할력",list:"비걸"},
+                            {word:"visual",kor:"a.시각의 ",list:"비쥬얼"},
+                            {word:"whereas",kor:"c.~인 반면에",list:"웨얼에스"},
+                        ]
+                    },
+                    {
+                        idx:6,
+                        date:"59",
+                        words:[
+                            {word:"abstract",kor:"a.추상적인, n.추상, 개요",list:"엡스트렉트"},
+                            {word:"afterward",kor:"ad.나중에, 그 후에",list:"에프터월드"},
+                            {word:"alcohol",kor:"n.알코올, 술",list:"알코홀"},
+                            {word:"alien",kor:"a.외국의, 이국의, 이질적인",list:"에일리언"},
+                            {word:"appropriate",kor:"a.적절한",list:"어프로프리에잍"},
+                            {word:"arrive",kor:"v.도착하다",list:"어라이브"},
+                            {word:"aside",kor:"ad. 옆에, 체쳐 두고",list:"어사이드"},
+                            {word:"assign",kor:"v.지정하다, 할당하다",list:"어사인"},
+                            {word:"bless",kor:"v.축복하다",list:"블레스"},
+                            {word:"client",kor:"n.고객,(변호사 등의) 의뢰인",list:"클라이언트"},
+                            {word:"coincidence",kor:"n.우연의 일치, 동시에 일어난사건",list:"코인씨던스"},
+                            {word:"commute",kor:"n.통근, v.통근하다",list:"커뮤트"},
+                            {word:"confirm",kor:"v.확인하다, (결심을) 굳게하다",list:"컨펆"},
+                            {word:"contemporary",kor:"a.동시대의, 현대의",list:"컨템포러리"},
+                            {word:"cottage",kor:"n.오두막집",list:"카디쥐"},
+                            {word:"decline",kor:"n.하락, 쇠퇴,v.(정중히)거절하다, 쇠퇴한다, 하락하다",list:"디클라인"},
+                            {word:"defeat",kor:"n.패배, v.패배시키다",list:"디피트"},
+                            {word:"defect",kor:"n.결점, v.탈당하다, 망명하다",list:"디펙트"},
+                            {word:"deviation",kor:"n.일탈, 편차",list:"디비에션"},
+                            {word:"digest",kor:"n.요약(문), v.소화하다.",list:"다이제스트"},
+                        ]
+                    },
+                      {
+                        idx:7,
+                        date:"60",
+                        words:[
+                            {word:"dine",kor:"v.식사하다, 만찬을 대접하다",list:"다인"},
+                            {word:"discipline",kor:"n.훈련, 단련, 기강, 규율, v.훈련하다, 단련하다",list:"디세플린"},
+                            {word:"document",kor:"n.서류, 문서, v.기록하다",list:"다큐먼트"},
+                            {word:"duty",kor:"n.의무, 관세",list:"듀디"},
+                            {word:"equilibrium",kor:"n.평형, 균형(상태)",list:"이퀄리브리엄"},
+                            {word:"evil",kor:"n.악, 사악, a.사악한",list:"이블"},
+                            {word:"execute",kor:"v.실행하다, 사형 집행하다",list:"엑시큐트"},
+                            {word:"explain",kor:"v.설명하다",list:"익스플레인"},
+                            {word:"fancy",kor:"n.공상, 상상, v.공상하다, a.화려한",list:"팬시"},
+                            {word:"forbid",kor:"v.금지하다",list:"폴비드"},
+                            {word:"fuse",kor:"v.융합하다, n.전기 퓨즈, 도화선",list:"퓨즈"},
+                            {word:"generous",kor:"n.,v.,a.",list:"제너리스"},
+                            {word:"grab",kor:"v.움켜쥐다",list:"그램"},
+                            {word:"highway",kor:"n.고속도로, 간선도로",list:"하이웨이"},
+                            {word:"horror",kor:"n.공포, 전율, a.공포의",list:"호러"},
+                            {word:"illustrate",kor:"v.(책 등에) 삽화를 쓰다, 실증하다",list:"일러스트레이트"},
+                            {word:"imitate",kor:"v.모방하다",list:"이미테이트"},
+                            {word:"inspire",kor:"v.영감을 주다, 고무시키다, 격려하다",list:"인쓰파이얼"},
+                            {word:"install",kor:"v.설치하다",list:"인스털"},
+                            {word:"insure",kor:"v.보험에 들다, 보장하다",list:"인슈얼"},
+                        ]
+                    }
+                    // {
+                    //     idx:4,
+                    //     date:"57",
+                    //     words:[
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //     ]
+                    // }
+                ]
+
+            },
+            methods:{
+                update(){
+                    this.vWord = 3;
+
+
+                    this.wView = [];
+                    for (var i = 0; i < this.wdata[0].words.length; i++) {
+                        var num = Math.floor(Math.random() * this.wdata[0].words.length);
+                        if(this.wView.indexOf(num) === -1){
+                            this.wView.push(num);
+                        }else{
+                            i--;
+                        }
+                    }
+                },
+                myClick(k){
+                    //this.back = k;
+
+                   if(this.back == k){
+                       this.back = null
+                   }else{
+                    this.back = k;
+                   }
+                    
+                    //document.querySelector(".view li").classList.remove("back");
+                        // if( this.backView == true){
+                        //     this.back = k;
+                        //     this.backView = false;
+                        // }else{
+                        //     document.querySelector(".view li").classList.remove("back");
+                            
+                        //     this.backView = true
+                        // }
+                    
+
+
+                    //this.back = k;
+                    console.log( k )
+                }
+            }
+          
+        })
+    </script>
+</body>
+</html>
