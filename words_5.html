@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        
+
+        .nav{display: flex;overflow-x:auto ;flex-wrap: nowrap;}
+        .nav li{padding: 10px 15px;cursor:pointer;font-size: 2em;font-weight: bold;}
+        .nav li.active{background: blueviolet;color:white}
+        .btn-wrap{margin-bottom: 10px;display: flex;}
+        .btn-wrap div{padding: 10px 20px;background:white;color:white;margin-right:5px;color:black}
+        .btn-wrap div.tactive{background: skyblue;}
+        .view li{
+            height: 100px;
+            border-radius:5px;border: 3px solid #ddd;margin-bottom:5px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: 0.3s;
+        }
+        .view li .num{
+            position: absolute;left: 10px;top: 10px;width: 25px;height: 25px;background: #000;z-index:1;
+            border-radius: 50%;color:white
+        }
+        .view li .num.red{background: red;}
+        /* .view li:hover{transform:rotateY(180deg);} */
+        li.back{transform:rotateY(180deg);}
+        .view li div{
+            position: absolute;width: 100%;height: 100%;
+            overflow: hidden;
+            backface-visibility:hidden;
+            display: flex;justify-content: center;align-items: center;
+            text-align: center;
+            flex-direction: column;
+            background: white;
+
+        }
+        
+        .view li div.front h3{margin-bottom: 5px;font-size: 2em;}
+        .view li div.back{transform:rotateY(180deg) translateZ(5px);backface-visibility:hidden;font-weight: bold;font-size: 1.3em;}
+
+        #app{padding: 0 16px;}
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        
+
+        <ul class="nav">
+            <li v-for="(item,i) in wdata" :key="i" @click="view=i;isActive=i" :class="{active : isActive == i  } ">
+                {{wdata[i].date}}
+            </li>
+        </ul>
+        <div v-if="view == i"  v-for="(item,i) in wdata" :key="i">
+           <!-- {{wdata[i].words[1]}} -->
+         <div class="btn-wrap">
+            <div @click="vWord=0" :class="{tactive:vWord==0}">영어</div>
+            <!-- <button @click="vWord=1">한글</button>
+            <button @click="vWord=2">발음</button> -->
+            <div @click="update" :class="{tactive:vWord==3}">발음랜덤</div>
+         </div>
+
+
+           <h3>no. {{wdata[i].date}}</h3>
+          
+           <ul v-if="vWord == 0" class="view">
+               <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                   <div class="num">{{k+1}}</div>
+                    <div class="front"><h3>{{wdata[i].words[k].word}}</h3><p>[{{wdata[i].words[k].list}}]</p></div>
+                   <div class="back">{{wdata[i].words[k].kor}}</div>
+               </li>
+           </ul>
+           <ul v-if="vWord == 1">
+            <li v-for="(item,k) in wdata[i].words" :key="k">
+                {{wdata[i].words[k].kor}}
+            </li>
+            </ul>
+            <ul v-if="vWord == 2">
+                <li v-for="(item,k) in wdata[i].words" :key="k">
+                    {{wdata[i].words[k].list}}
+                </li>
+            </ul>
+            <ul v-if="vWord == 3" class="view">
+                <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                    <div class="num red">{{k+1}}</div>
+                    <div class="front"><h3>{{wdata[i].words[wView[k]].list}}</h3></div>
+                   <div class="back"><h3>{{wdata[i].words[wView[k]].word}}</h3>  <p>{{wdata[i].words[wView[k]].kor}}</p></div>
+                </li>
+            </ul>
+
+        </div>
+        
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+    <div class="container fixed-bottom bg-info">
+        <div class="row text-center">
+            <div class="col"><a href="index.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-house mb-1"></i> home</a></div>
+            <div class="col"><a href="eng.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-map mb-1"></i> eng</a></div>
+            <div class="col"><a href="words.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-book-open mb-1"></i> words</a></div>
+            <div class="col"><a href="words_5.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-book-open mb-1"></i> w5</a></div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // import view from data.js;
+        new Vue({
+            el:"#app",
+            data:{
+                //view:"han",
+                view:"0",
+                isActive:0,
+                back:null,
+                backView:true,
+                vWord:0,
+                tactive:0,
+                wView:[],
+                wdata:[
+                    {
+                        idx:1,
+                        date:"1",
+                        words:[
+                            {word:"intellect",kor:"n.지적 능력, 지적 능력이 뛰어난 사람",list:"인털렉트"},
+                            {word:"kindergarten",kor:"n.유치원",list:"킨덜갈든"},
+                            {word:"laboratory",kor:"n.실험실,a.실험실의",list:"레보레토리"},
+                            {word:"laundry",kor:"n.세탁물",list:"런드리"},
+                            {word:"literally",kor:"ad.문자그대로",list:"리덜러리"},
+                            {word:"measure",kor:"n.측정, 수단,v.측정하다",list:"메져"},
+                            {word:"minor",kor:"n.미성년자,v.부전공하다,a.사소한, 2류의",list:"마이너"},
+                            {word:"modest",kor:"a.겸손한, 알맞은",list:"모디스트"},
+                            {word:"necessity",kor:"n.필수, 필요, 필수품",list:"네쎄씨디"},
+                            {word:"option",kor:"n.선택, 선택권",list:"옵션"},
+                            {word:"pause",kor:"n.중단, v.중단하다, 잠시 멈추다",list:"퍼즈"},
+                            {word:"prey",kor:"n.먹이",list:"프레이"},
+                            {word:"prior",kor:"a.이전의, 우선하는",list:"프라이어"},
+                            {word:"prohibit",kor:"v.금지하다",list:"프로히빗"},
+                            {word:"propose",kor:"v.제안하다, 청혼하다",list:"프로포즈"},
+                            {word:"pupil",kor:"n.학생, 눈동자, 동공",list:"퓨플"},
+                            {word:"receipt",kor:"n.영수증",list:"뤼씨트"},
+                            {word:"regulate",kor:"v.규제하다, 조절하다",list:"레귤레이트"},
+                            {word:"resort",kor:"n.휴향지, 리조트, 의존, 의지",list:"리졸트"},
+                            {word:"royal",kor:"a.왕족의, 왕의",list:"로얄"},
+                        ]
+                    },
+                    {
+                        idx:2,
+                        date:"2",
+                        words:[
+                            {word:"ruin",kor:"n.파산,파멸,v.폐허로 만들다",list:"루인"},
+                            {word:"scarce",kor:"a.부족한, 드문",list:"스케얼스"},
+                            {word:"scholarship",kor:"n.장학금, 학문",list:"스콜러쉽"},
+                            {word:"shelf",kor:"n.선반",list:"셀프"},
+                            {word:"shortage",kor:"n.부족, 결함",list:"숄디쥐"},
+                            {word:"spice",kor:"n.향신료, 양념",list:"스파이스"},
+                            {word:"split",kor:"n.분열,v.찢다, (세로로)쪼개다,a.쪼개진",list:"스플릿"},
+                            {word:"surgery",kor:"n.외과수술",list:"써저리"},
+                            {word:"suspect",kor:"n.용의자,v.~가아닐까 의심하다",list:"서스펙트"},
+                            {word:"tempt",kor:"v.유혹하다",list:"템트"},
+                            {word:"thrive",kor:"v.번영하다. 발전하다",list:"뜨라이브"},
+                            {word:"tolerate",kor:"v.참다, 용인하다, 묵인하다",list:"톨러레이트"},
+                            {word:"trait",kor:"n.특징, 특성",list:"트레잇트"},
+                            {word:"transform",kor:"v.변형시키다, 변환하다",list:"트렌스폶"},
+                            {word:"triumph",kor:"n.승리,v.승리하다",list:"트롸이엄프"},
+                            {word:"ultimate",kor:"a.궁극적인, 최후의",list:"얼티멧트"},
+                            {word:"utility",kor:"n.효용,(수도,가스 등)공익 설비 시설",list:"유틸리디"},
+                            {word:"worship",kor:"n.예배, 숭배,v.예배하다, 숭배하다",list:"워쉽"},
+                            {word:"wreck",kor:"n.난파, 조난, 난파선,v.난파시키다",list:"뤠크"},
+                            {word:"yield",kor:"v.생산하다, 양보하다, 굴복하다",list:"일드"},
+                        ]
+                    },
+                    {
+                        idx:3,
+                        date:"3",
+                        words:[
+                            {word:"abandon",kor:"v.포기하다. 버리다",list:"어벤던"},
+                            {word:"adolescent",kor:"n.청소년, a.청소년기의",list:"에돌레센트"},
+                            {word:"agency",kor:"n.대리점",list:"에이전씨"},
+                            {word:"altruism",kor:"n.이타주의",list:"알트루이즘"},
+                            {word:"annals",kor:"n.연대기, 기록",list:"애날스"},
+                            {word:"appear",kor:"v.나타나다",list:"어피얼"},
+                            {word:"arctic",kor:"a.북극의",list:"아크틱"},
+                            {word:"arise",kor:"v.생겨나다, 발생하다",list:"어라이즈"},
+                            {word:"associate",kor:"v.연관짓다, 교체하다, n.동료",list:"어소시에이트"},
+                            {word:"barrier",kor:"n.방벽, 장애물",list:"베리어"},
+                            {word:"capture",kor:"n.포획, v.붙잡다. 포획하다",list:"캡쳐"},
+                            {word:"compare",kor:"v.비교하다",list:"컴페어"},
+                            {word:"conquer",kor:"v.정복핟, 극복하다",list:"컨퀄"},
+                            {word:"contract",kor:"n.계약서, v.계약하다, 수축하다",list:"컨트렉트"},
+                            {word:"contray",kor:"n.정반대,a.반대의, 적합치않은, 불리한",list:"컨트러리"},
+                            {word:"council",kor:"n.협의, 협의회",list:"카운슬"},
+                            {word:"crew",kor:"n.승무원",list:"크류"},
+                            {word:"criteria",kor:"n.기준, 표준",list:"크리테리아"},
+                            {word:"cruel",kor:"a.잔인한",list:"크루얼"},
+                            {word:"debate",kor:"n.토론 ,v.토론하다",list:"디베이트"},
+                        ]
+                    }
+                    // {
+                    //     idx:4,
+                    //     date:"57",
+                    //     words:[
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //         {word:"",kor:"n.,v.,a.",list:""},
+                    //     ]
+                    // }
+                ]
+
+            },
+            methods:{
+                update(){
+                    this.vWord = 3;
+
+
+                    this.wView = [];
+                    for (var i = 0; i < this.wdata[0].words.length; i++) {
+                        var num = Math.floor(Math.random() * this.wdata[0].words.length);
+                        if(this.wView.indexOf(num) === -1){
+                            this.wView.push(num);
+                        }else{
+                            i--;
+                        }
+                    }
+                },
+                myClick(k){
+                    //this.back = k;
+
+                   if(this.back == k){
+                       this.back = null
+                   }else{
+                    this.back = k;
+                   }
+                    
+                    //document.querySelector(".view li").classList.remove("back");
+                        // if( this.backView == true){
+                        //     this.back = k;
+                        //     this.backView = false;
+                        // }else{
+                        //     document.querySelector(".view li").classList.remove("back");
+                            
+                        //     this.backView = true
+                        // }
+                    
+
+
+                    //this.back = k;
+                    console.log( k )
+                }
+            }
+          
+        })
+    </script>
+</body>
+</html>
