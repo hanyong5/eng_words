@@ -86,7 +86,7 @@
             <ul v-if="vWord == 3" class="view">
                 <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
                     <div class="num red">{{k+1}}</div>
-                    <div class="front"><h3>{{wdata[i].words[wView[k]].kor}}</h3></div>
+                    <div class="front" ><h3 v-html="wdata[i].words[wView[k]].kor"></h3></div>
                    <div class="back"><h3>{{wdata[i].words[wView[k]].word}}</h3> </div>
                 </li>
             </ul>
@@ -133,7 +133,7 @@
                             {word:"I was at the mall yesterday monrning.",kor:"나는 어제 아침 쇼핑몰에 있었다"},
                             {word:"Where were you last night?",kor:"어젯밤에 어디 있었어?"},
                             {word:"There were lots of horeses and carriages.",kor:"많은 말들과 마치들이 있었다"},
-                            {word:"Long ago, people did not have light bulbs.",kor:"오래전에, 사람들은 전구들을 가지고 있지 않았다"},
+                            {word:"Long ago, people did not have light bulbs.",kor:"오래전에, 사람들은 전구들을 <br>가지고 있지 않았다"},
                             {word:"There aren's any movie theaters.",kor:"영화관들이 하나도 없다"},
                             {word:"They are talking about the weekend.",kor:"그들은 주말에 대해 이야기하고 있다"},
                             {word:"Show your picture to your friends.",kor:"너의 사진을 친구들에게 보여줘"},
