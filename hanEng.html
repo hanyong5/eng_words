@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css"
+    integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .nav {
+      display: flex;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+    }
+
+    .nav li {
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .nav li.active {
+      background: blueviolet;
+      color: white
+    }
+
+    .btn-wrap {
+      margin-bottom: 10px;
+      display: flex;
+    }
+
+    .btn-wrap div {
+      padding: 10px 20px;
+      background: white;
+      color: white;
+      margin-right: 5px;
+      color: black
+    }
+
+    .btn-wrap div.tactive {
+      background: skyblue;
+    }
+
+    .view li {
+      height: 100px;
+      border-radius: 5px;
+      border: 3px solid #ddd;
+      margin-bottom: 5px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: 0.3s;
+    }
+
+    .view li .num {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      width: 25px;
+      height: 25px;
+      background: #000;
+      z-index: 1;
+      border-radius: 50%;
+      color: white
+    }
+
+    .view li .num.red {
+      background: red;
+    }
+
+    /* .view li:hover{transform:rotateY(180deg);} */
+    li.back {
+      transform: rotateY(180deg);
+    }
+
+    .view li div {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      backface-visibility: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column;
+      background: white;
+
+    }
+
+    .view li div.front h3 {
+      margin-bottom: 5px;
+      font-size: 2em;
+    }
+
+    .view li div.back {
+      transform: rotateY(180deg) translateZ(5px);
+      backface-visibility: hidden;
+      font-weight: bold;
+      font-size: 1.3em;
+    }
+
+    #app {
+      padding: 0 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+
+
+    <ul class="nav">
+      <li v-for="(item,i) in wdata" :key="i" @click="view=i;isActive=i" :class="{active : isActive == i  } ">
+        {{wdata[i].date}}
+      </li>
+    </ul>
+    <div v-if="view == i" v-for="(item,i) in wdata" :key="i">
+      <!-- {{wdata[i].words[1]}} -->
+      <div class="btn-wrap">
+        <div @click="vWord=0" :class="{tactive:vWord==0}">영어</div>
+        <!-- <button @click="vWord=1">한글</button>
+            <button @click="vWord=2">발음</button> -->
+        <div @click="update" :class="{tactive:vWord==3}">한글랜덤</div>
+      </div>
+
+
+      <h3>no. {{wdata[i].date}}</h3>
+
+      <ul v-if="vWord == 0" class="view">
+        <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+          <div class="num">{{k+1}}</div>
+          <div class="front">
+            <h3>{{wdata[i].words[k].word}}</h3>
+          </div>
+          <div class="back">{{wdata[i].words[k].kor}}</div>
+        </li>
+      </ul>
+      <ul v-if="vWord == 1">
+        <li v-for="(item,k) in wdata[i].words" :key="k">
+          {{wdata[i].words[k].kor}}
+        </li>
+      </ul>
+
+      <ul v-if="vWord == 3" class="view">
+        <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+          <div class="num red">{{k+1}}</div>
+          <div class="front">
+            <h3>{{wdata[i].words[wView[k]].kor}}</h3>
+          </div>
+          <div class="back">
+            <h3>{{wdata[i].words[wView[k]].word}}</h3>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+
+  </div>
+  <!--  <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+    <div class="container fixed-bottom bg-info">
+        <div class="row text-center">
+            <div class="col"><a href="index.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-house mb-1"></i> home</a></div>
+            <div class="col"><a href="eng.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-map mb-1"></i> eng</a></div>
+            <div class="col"><a href="words.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-book-open mb-1"></i> words</a></div>
+            <div class="col"><a href="words_5.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-book-open mb-1"></i> w5</a></div>
+        </div>
+    </div> -->
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    // import view from data.js;
+    new Vue({
+      el: "#app",
+      data: {
+        //view:"han",
+        view: "0",
+        isActive: 0,
+        back: null,
+        backView: true,
+        vWord: 0,
+        tactive: 0,
+        wView: [],
+        wdata: [
+          {
+            idx: 19,
+            date: "19",
+            words: [
+              { word: "agency", kor: "기관" },
+              { word: "meteorological", kor: "기상학의" },
+              { word: "atomosphere", kor: "대기" },
+              { word: "forecast", kor: "예보" },
+              { word: "military", kor: "군대" },
+              { word: "predict", kor: "예측하다" },
+              { word: "determine", kor: "결정하다" },
+              { word: "precipitation", kor: "강수량" },
+              { word: "humidity", kor: "습도" },
+              { word: "atomospheric pressure", kor: "기압" },
+
+              { word: "monitor", kor: "관찰하다" },
+              { word: "violent", kor: "격렬한" },
+              { word: "transportaition", kor: "운송" },
+              { word: "vessel", kor: "선박" },
+              { word: "density", kor: "밀도" },
+              { word: "visibility", kor: "가시거리" },
+              { word: "current", kor: "해류" },
+              { word: "condition", kor: "상태" },
+              { word: "unique", kor: "고유의" },
+              { word: "respond", kor: "대응하다" },
+
+              { word: "novelty", kor: "새로운물건, 진기함" },
+              { word: "menace", kor: "위협, 협박" },
+              { word: "mitigate", kor: "완화하다" },
+              { word: "litigious", kor: "소소을 좋아하는" },
+              { word: "induce", kor: "유도하다, 설득시키다" },
+              { word: "exacting", kor: "엄한, 엄격한" },
+              { word: "downturn", kor: "하강, 침체" },
+              { word: "deplete", kor: "고갈시키다" },
+              { word: "wean", kor: "젖을 떼다, 이유시키다" },
+              { word: "withhold", kor: "보류하다, 억제하다" },
+
+              { word: "wrangle", kor: "언쟁하다, 말다툼하다" },
+              { word: "compulsory", kor: "강제적인, 의무적인" },
+              { word: "bluntly", kor: "무뚝뚝하게, 무디게" },
+              { word: "convene", kor: "소집하다" },
+              { word: "delegate", kor: "대표, 사절" },
+              { word: "respond by~", kor: "~으로 대답하다" },
+              { word: "as ever", kor: "여느 때처럼, 전과 다름없이" },
+              { word: "count for much", kor: "상다히 중요하다" },
+              { word: "distinguish oneself", kor: "이름을 날리다, 유명해지다" },
+              { word: "dispense with", kor: "~없이 지내다" },
+            ]
+          },
+          {
+            idx: 20,
+            date: "20",
+            words: [
+              { word: "handshake", kor: "악수" },
+              { word: "secret", kor: "비밀" },
+              { word: "between", kor: "사이의" },
+              { word: "offer", kor: "제안하다" },
+              { word: "confidence", kor: "신뢰" },
+              { word: "personal", kor: "사적인" },
+              { word: "modern", kor: "현대의" },
+              { word: "salute", kor: "거수경례" },
+              { word: "medieval", kor: "중세의" },
+              { word: "gesture", kor: "손짓하다" },
+
+              { word: "convey", kor: "전달하다" },
+              { word: "message", kor: "메시지" },
+              { word: "armored", kor: "갑옷을 입은" },
+              { word: "visor", kor: "차광판" },
+              { word: "enemy", kor: "적" },
+              { word: "congratulatory", kor: "축하의" },
+              { word: "circumstance", kor: "상황" },
+              { word: "wave", kor: "(손,팔을) 흔들다" },
+              { word: "casual", kor: "격식을 차리지 않은" },
+              { word: "slap", kor: "(손바닥으로) 치다" },
+
+              { word: "amend", kor: "고치다, 수정하다" },
+              { word: "diplomat", kor: "외교관" },
+              { word: "diffuse", kor: "발산하다, 분산시키다" },
+              { word: "digress", kor: "(이야기가)벗어나다" },
+              { word: "enact", kor: "제정하다, 규정하다" },
+              { word: "encryption", kor: "암호화" },
+              { word: "faltering", kor: "말을 더듬는, 우물거리는" },
+              { word: "fatigued", kor: "지친" },
+              { word: "agitate", kor: "흔들다, 선동하다" },
+              { word: "gist", kor: "요지, 요점" },
+
+              { word: "gratis", kor: "무료로, 공짜로" },
+              { word: "clumsy", kor: "서투른, 어색한" },
+              { word: "groundless", kor: "근거없는" },
+              { word: "prudent", kor: "신중한" },
+              { word: "homesick", kor: "향수병의" },
+              { word: "on offer", kor: "이용할수 있는, 제공되는" },
+              { word: "as far as~", kor: "~까지" },
+              { word: "fish out", kor: "(어렵게)찾아내다, 꺼내다" },
+              { word: "find fault with", kor: "~의 흠을 잡다, 비난하다" },
+              { word: "feed on", kor: "~을 먹고 살다" },
+            ]
+          },
+          {
+            idx: 21,
+            date: "21",
+            words: [
+              { word: "digest", kor: "소화시키다" },
+              { word: "process", kor: "과정" },
+              { word: "involve", kor: "포함하다" },
+              { word: "exact", kor: "정확한" },
+              { word: "depending on", kor: "~에 따라" },
+              { word: "several", kor: "몇몇의" },
+              { word: "crush", kor: "으깨다" },
+              { word: "esophagus", kor: "식도" },
+              { word: "saliva", kor: "침" },
+              { word: "enzymy", kor: "효소" },
+
+              { word: "break down", kor: "부수다" },
+              { word: "acid", kor: "산" },
+              { word: "intestine", kor: "장, 창자" },
+              { word: "absorb", kor: "흡수하다" },
+              { word: "nutrient", kor: "영양분" },
+              { word: "leftover", kor: "남은 음식" },
+              { word: "convert", kor: "바꾸다" },
+              { word: "waste", kor: "노폐물" },
+              { word: "adapt", kor: "허용하다" },
+              { word: "unconscious", kor: "무의식의, 의식이 없는" },
+
+              { word: "hub", kor: "중심, 중추" },
+              { word: "illegible", kor: "읽기 어려운" },
+              { word: "impartial", kor: "편견이 없는, 공평한" },
+              { word: "impervious", kor: "스며들지 않는, 손상되지 않는" },
+              { word: "illuminate", kor: "비추다" },
+              { word: "resolution", kor: "결의" },
+              { word: "impediment", kor: "방해, 장애" },
+              { word: "latent", kor: "숨은, 잠재한 " },
+              { word: "molest", kor: "괴롭히다, 성희롱하다" },
+              { word: "sully", kor: "더럽히다, 훼손하다" },
+
+              { word: "rally", kor: "집회, 시위운동" },
+              { word: "robbery", kor: "강도, 강도죄" },
+              { word: "respectful", kor: "공손한, 정중한" },
+              { word: "intoxicate", kor: "취하게 하다, 흥분시키다" },
+              { word: "itinerary", kor: "여행 일정" },
+              { word: "involve with~", kor: "~와 관계시키다" },
+              { word: "crush width~", kor: "~으로 짓밟다" },
+              { word: "for the present", kor: "당분간" },
+              { word: "get the better of", kor: "~을 이기다" },
+              { word: "go by the book", kor: "~원칙대호 하다" },
+            ]
+          },
+          {
+            idx: 22,
+            date: "22",
+            words: [
+              { word: "wedding", kor: "결혼식" },
+              { word: "groomsman", kor: "신랑 들러리" },
+              { word: "demanding", kor: "부담이 큰" },
+              { word: "best man", kor: "들러리" },
+              { word: "bachelor", kor: "미혼남" },
+              { word: "fiance", kor: "약혼자" },
+              { word: "arrange", kor: "마련하다" },
+              { word: "disappointed", kor: "실망한" },
+              { word: "stuck on", kor: "~에 따져" },
+              { word: "tradition", kor: "전통" },
+
+              { word: "aisle", kor: "통로" },
+              { word: "borrowed", kor: "빌린" },
+              { word: "rhyme", kor: "운율" },
+              { word: "belonged", kor: "~의 것인" },
+              { word: "lend", kor: "빌려주다" },
+              { word: "pearl", kor: "진주" },
+              { word: "groom", kor: "신랑" },
+              { word: "bride", kor: "신부" },
+              { word: "vow", kor: "서약" },
+              { word: "altar", kor: "제단" },
+
+              { word: "kneel", kor: "물릎을 긇다" },
+              { word: "lavish", kor: "~에게 지나치게 주다" },
+              { word: "libel", kor: "비방죄, 명예훼손" },
+              { word: "Ludicrous", kor: "웃기는, 익살스러운" },
+              { word: "menial", kor: "시시한, 지루한" },
+              { word: "molar", kor: "어금니" },
+              { word: "monarchy", kor: "군주정치;군주일가, 왕가" },
+              { word: "mourning", kor: "비탄;애도;상" },
+              { word: "mundane", kor: "평벙한, 일상적인" },
+              { word: "numb", kor: "마비된, 감각을 잃은" },
+
+              { word: "obliterate", kor: "제거하다, 말소하다" },
+              { word: "opinionated", kor: "자기의 의견을 고집한는 고집이 센" },
+              { word: "opulent", kor: "화련한, 부유한" },
+              { word: "outlandish", kor: "이국풍의, 기이ㅣ한" },
+              { word: "outmoded", kor: "유행에 뒤진, 구식의" },
+              { word: "that is", kor: "즉, 말하자면" },
+              { word: "on ~ing", kor: "~하자마자" },
+              { word: "give vent to", kor: "(감정을) 분출한다" },
+              { word: "hold good", kor: "유효하다" },
+              { word: "idle away", kor: "빈둥거리다" },
+
+            ]
+          }
+
+
+          // {
+          //     idx:3,
+          //     date:"3",
+          //     words:[
+
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+          // { word: "", kor: "" },
+
+          //     ]
+          // }
+        ]
+
+      },
+      methods: {
+        update() {
+          this.vWord = 3;
+
+
+          this.wView = [];
+          for (var i = 0; i < this.wdata[0].words.length; i++) {
+            var num = Math.floor(Math.random() * this.wdata[0].words.length);
+            if (this.wView.indexOf(num) === -1) {
+              this.wView.push(num);
+            } else {
+              i--;
+            }
+          }
+        },
+        myClick(k) {
+          //this.back = k;
+
+          if (this.back == k) {
+            this.back = null
+          } else {
+            this.back = k;
+          }
+
+          //document.querySelector(".view li").classList.remove("back");
+          // if( this.backView == true){
+          //     this.back = k;
+          //     this.backView = false;
+          // }else{
+          //     document.querySelector(".view li").classList.remove("back");
+
+          //     this.backView = true
+          // }
+
+
+
+          //this.back = k;
+          console.log(k)
+        }
+      }
+
+    })
+  </script>
+</body>
+
+</html>

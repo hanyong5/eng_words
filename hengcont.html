@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        
+
+        .nav{display: flex;overflow-x:auto ;flex-wrap: nowrap;}
+        .nav li{padding: 10px 15px;cursor:pointer;font-size: 2em;font-weight: bold;}
+        .nav li.active{background: blueviolet;color:white}
+        .btn-wrap{margin-bottom: 10px;display: flex;}
+        .btn-wrap div{padding: 10px 20px;background:white;color:white;margin-right:5px;color:black}
+        .btn-wrap div.tactive{background: skyblue;}
+        .view li{
+            height: 100px;
+            border-radius:5px;border: 3px solid #ddd;margin-bottom:5px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: 0.3s;
+        }
+        .view li .num{
+            position: absolute;left: 10px;top: 10px;width: 25px;height: 25px;background: #000;z-index:1;
+            border-radius: 50%;color:white
+        }
+        .view li .num.red{background: red;}
+        /* .view li:hover{transform:rotateY(180deg);} */
+        li.back{transform:rotateY(180deg);}
+        .view li div{
+            position: absolute;width: 100%;height: 100%;
+            overflow: hidden;
+            backface-visibility:hidden;
+            display: flex;justify-content: center;align-items: center;
+            text-align: center;
+            flex-direction: column;
+            background: white;
+
+        }
+        
+        .view li div.front h3{margin-bottom: 5px;font-size: 1.2em;}
+        .view li div.back{transform:rotateY(180deg) translateZ(5px);backface-visibility:hidden;font-weight: bold;font-size: 1.3em;}
+
+        #app{padding: 0 16px;}
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        
+
+        <ul class="nav">
+            <li v-for="(item,i) in wdata" :key="i" @click="view=i;isActive=i" :class="{active : isActive == i  } ">
+                {{wdata[i].date}}
+            </li>
+        </ul>
+        <div v-if="view == i"  v-for="(item,i) in wdata" :key="i">
+           <!-- {{wdata[i].words[1]}} -->
+         <div class="btn-wrap">
+            <div @click="vWord=0" :class="{tactive:vWord==0}">영어</div>
+            <!-- <button @click="vWord=1">한글</button>
+            <button @click="vWord=2">발음</button> -->
+            <div @click="update" :class="{tactive:vWord==3}">한글랜덤</div>
+         </div>
+
+
+           <h3>no. {{wdata[i].date}}</h3>
+          
+           <ul v-if="vWord == 0" class="view">
+               <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                   <div class="num">{{k+1}}</div>
+                    <div class="front"><h3>{{wdata[i].words[k].word}}</h3></div>
+                   <div class="back">{{wdata[i].words[k].kor}}</div>
+               </li>
+           </ul>
+           <ul v-if="vWord == 1">
+            <li v-for="(item,k) in wdata[i].words" :key="k">
+                {{wdata[i].words[k].kor}}
+            </li>
+            </ul>
+
+            <ul v-if="vWord == 3" class="view">
+                <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                    <div class="num red">{{k+1}}</div>
+                    <div class="front" ><h3 v-html="wdata[i].words[wView[k]].kor"></h3></div>
+                   <div class="back"><h3>{{wdata[i].words[wView[k]].word}}</h3> </div>
+                </li>
+            </ul>
+
+        </div>
+        
+    </div>
+   <!--  <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+    <div class="container fixed-bottom bg-info">
+        <div class="row text-center">
+            <div class="col"><a href="index.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-house mb-1"></i> home</a></div>
+            <div class="col"><a href="eng.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-map mb-1"></i> eng</a></div>
+            <div class="col"><a href="words.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-book-open mb-1"></i> words</a></div>
+            <div class="col"><a href="words_5.html" class="p-3 d-flex flex-column"><i class="fa-solid fa-book-open mb-1"></i> w5</a></div>
+        </div>
+    </div> -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // import view from data.js;
+        new Vue({
+            el:"#app",
+            data:{
+                //view:"han",
+                view:"0",
+                isActive:0,
+                back:null,
+                backView:true,
+                vWord:0,
+                tactive:0,
+                wView:[],
+                wdata:[
+                    {
+                        idx:1,
+                        date:"1",
+                        words:[
+                            {word:"I was at the mall yesterday monrning.",kor:"나는 어제 아침 쇼핑몰에 있었다"},
+                            {word:"Where were you last night?",kor:"어젯밤에 어디 있었어?"},
+                            {word:"There were lots of horeses and carriages.",kor:"많은 말들과 마치들이 있었다"},
+                            {word:"Long ago, people did not have light bulbs.",kor:"오래전에, 사람들은 전구들을 <br>가지고 있지 않았다"},
+                            {word:"There aren's any movie theaters.",kor:"영화관들이 하나도 없다"},
+                            {word:"They are talking about the weekend.",kor:"그들은 주말에 대해 이야기하고 있다"},
+                            {word:"Show your picture to your friends.",kor:"너의 사진을 친구들에게 보여줘"},
+                            {word:"Divide the line into twelve parts.",kor:"줄을 12등분해라"},
+                            {word:"Use straws width different color.",kor:"다른 색깔의 빨대들을 사용하라!"},
+                            {word:"Ask an adult for help.",kor:"어른에게 도움을 청하라"},
+
+                        ]
+                    }
+
+
+                    // {
+                    //     idx:3,
+                    //     date:"3",
+                    //     words:[
+                    //         {word:"",kor:""},
+                            // {word:"",kor:""},
+                            // {word:"",kor:""},
+                            // {word:"",kor:""},
+                            // {word:"",kor:""},
+                            // {word:"",kor:""},
+
+                  
+                    //     ]
+                    // }
+                ]
+
+            },
+            methods:{
+                update(){
+                    this.vWord = 3;
+
+
+                    this.wView = [];
+                    for (var i = 0; i < this.wdata[0].words.length; i++) {
+                        var num = Math.floor(Math.random() * this.wdata[0].words.length);
+                        if(this.wView.indexOf(num) === -1){
+                            this.wView.push(num);
+                        }else{
+                            i--;
+                        }
+                    }
+                },
+                myClick(k){
+                    //this.back = k;
+
+                   if(this.back == k){
+                       this.back = null
+                   }else{
+                    this.back = k;
+                   }
+                    
+                    //document.querySelector(".view li").classList.remove("back");
+                        // if( this.backView == true){
+                        //     this.back = k;
+                        //     this.backView = false;
+                        // }else{
+                        //     document.querySelector(".view li").classList.remove("back");
+                            
+                        //     this.backView = true
+                        // }
+                    
+
+
+                    //this.back = k;
+                    console.log( k )
+                }
+            }
+          
+        })
+    </script>
+</body>
+</html>
