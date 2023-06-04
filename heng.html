@@ -1,100 +1,170 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css"
+        integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/style.css">
     <style>
-        
+        .nav {
+            display: flex;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
 
-        .nav{display: flex;overflow-x:auto ;flex-wrap: nowrap;}
-        .nav li{padding: 10px 15px;cursor:pointer;font-size: 2em;font-weight: bold;}
-        .nav li.active{background: blueviolet;color:white}
-        .btn-wrap{margin-bottom: 10px;display: flex;}
-        .btn-wrap div{padding: 10px 20px;background:white;color:white;margin-right:5px;color:black}
-        .btn-wrap div.tactive{background: skyblue;}
-        .view li{
+        .nav li {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .nav li.active {
+            background: blueviolet;
+            color: white
+        }
+
+        .btn-wrap {
+            margin-bottom: 10px;
+            display: flex;
+        }
+
+        .btn-wrap div {
+            padding: 10px 20px;
+            background: white;
+            color: white;
+            margin-right: 5px;
+            color: black
+        }
+
+        .btn-wrap div.tactive {
+            background: skyblue;
+        }
+
+        .view li {
             height: 100px;
-            border-radius:5px;border: 3px solid #ddd;margin-bottom:5px;
+            border-radius: 5px;
+            border: 3px solid #ddd;
+            margin-bottom: 5px;
             position: relative;
             transform-style: preserve-3d;
             transition: 0.3s;
         }
-        .view li .num{
-            position: absolute;left: 10px;top: 10px;width: 25px;height: 25px;background: #000;z-index:1;
-            border-radius: 50%;color:white
+
+        .view li .num {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            width: 25px;
+            height: 25px;
+            background: #000;
+            z-index: 1;
+            border-radius: 50%;
+            color: white
         }
-        .view li .num.red{background: red;}
+
+        .view li .num.red {
+            background: red;
+        }
+
         /* .view li:hover{transform:rotateY(180deg);} */
-        li.back{transform:rotateY(180deg);}
-        .view li div{
-            position: absolute;width: 100%;height: 100%;
+        li.back {
+            transform: rotateY(180deg);
+        }
+
+        .view li div {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            backface-visibility:hidden;
-            display: flex;justify-content: center;align-items: center;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
             flex-direction: column;
             background: white;
 
         }
-        
-        .view li div.front h3{margin-bottom: 5px;font-size: 2em;}
-        .view li div.back{transform:rotateY(180deg) translateZ(5px);backface-visibility:hidden;font-weight: bold;font-size: 1.3em;}
 
-        #app{padding: 0 16px;}
+        .view li div.front h3 {
+            margin-bottom: 5px;
+            font-size: 2em;
+        }
 
+        .view li div.back {
+            transform: rotateY(180deg) translateZ(5px);
+            backface-visibility: hidden;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        #app {
+            padding: 0 16px;
+        }
     </style>
 </head>
+
 <body>
     <div id="app">
-        
+
 
         <ul class="nav">
             <li v-for="(item,i) in wdata" :key="i" @click="view=i;isActive=i" :class="{active : isActive == i  } ">
                 {{wdata[i].date}}
             </li>
         </ul>
-        <div v-if="view == i"  v-for="(item,i) in wdata" :key="i">
-           <!-- {{wdata[i].words[1]}} -->
-         <div class="btn-wrap">
-            <div @click="vWord=0" :class="{tactive:vWord==0}">영어</div>
-            <!-- <button @click="vWord=1">한글</button>
+        <div v-if="view == i" v-for="(item,i) in wdata" :key="i">
+            <!-- {{wdata[i].words[1]}} -->
+            <div class="btn-wrap">
+                <div @click="vWord=0" :class="{tactive:vWord==0}">영어</div>
+                <!-- <button @click="vWord=1">한글</button>
             <button @click="vWord=2">발음</button> -->
-            <div @click="update" :class="{tactive:vWord==3}">한글랜덤</div>
-         </div>
+                <div @click="update" :class="{tactive:vWord==3}">한글랜덤</div>
+            </div>
 
 
-           <h3>no. {{wdata[i].date}}</h3>
-          
-           <ul v-if="vWord == 0" class="view">
-               <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
-                   <div class="num">{{k+1}}</div>
-                    <div class="front"><h3>{{wdata[i].words[k].word}}</h3></div>
-                   <div class="back">{{wdata[i].words[k].kor}}</div>
-               </li>
-           </ul>
-           <ul v-if="vWord == 1">
-            <li v-for="(item,k) in wdata[i].words" :key="k">
-                {{wdata[i].words[k].kor}}
-            </li>
+            <h3>no. {{wdata[i].date}}</h3>
+
+            <ul v-if="vWord == 0" class="view">
+                <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
+                    <div class="num">{{k+1}}</div>
+                    <div class="front">
+                        <h3>{{wdata[i].words[k].word}}</h3>
+                    </div>
+                    <div class="back">{{wdata[i].words[k].kor}}</div>
+                </li>
+            </ul>
+            <ul v-if="vWord == 1">
+                <li v-for="(item,k) in wdata[i].words" :key="k">
+                    {{wdata[i].words[k].kor}}
+                </li>
             </ul>
 
             <ul v-if="vWord == 3" class="view">
                 <li v-for="(item,k) in wdata[i].words" :key="k" @click="myClick(k)" :class="{back:back==k}">
                     <div class="num red">{{k+1}}</div>
-                    <div class="front"><h3>{{wdata[i].words[wView[k]].kor}}</h3></div>
-                   <div class="back"><h3>{{wdata[i].words[wView[k]].word}}</h3> </div>
+                    <div class="front">
+                        <h3>{{wdata[i].words[wView[k]].kor}}</h3>
+                    </div>
+                    <div class="back">
+                        <h3>{{wdata[i].words[wView[k]].word}}</h3>
+                    </div>
                 </li>
             </ul>
 
         </div>
-        
+
     </div>
-   <!--  <br>
+    <!--  <br>
     <br>
     <br>
     <br>
@@ -115,41 +185,58 @@
     <script>
         // import view from data.js;
         new Vue({
-            el:"#app",
-            data:{
+            el: "#app",
+            data: {
                 //view:"han",
-                view:"0",
-                isActive:0,
-                back:null,
-                backView:true,
-                vWord:0,
-                tactive:0,
-                wView:[],
-                wdata:[
+                view: "0",
+                isActive: 0,
+                back: null,
+                backView: true,
+                vWord: 0,
+                tactive: 0,
+                wView: [],
+                wdata: [
                     {
-                        idx:1,
-                        date:"1",
-                        words:[
-                            {word:"boil",kor:"끌다. 끓이다"},
-                            {word:"gather",kor:"모으다"},
-                            {word:"machine",kor:"기계"},
-                            {word:"dry",kor:"마르다, 말리다"},
-                            {word:"flat",kor:"평평한"},
-                            {word:"press",kor:"누르다"},
-                            {word:"poo",kor:"(어린 아이의 말로)똥"},
-                            {word:"turn into",kor:"~으로 변하다"},
-                            {word:"mixture",kor:"혼합물"},
-                            {word:"chew up",kor:"씹다"},
-                            {word:"stinky",kor:"악취가 나는"},
-                            {word:"rhino",kor:"코뿔소"},
-                            {word:"still",kor:"여전히"},
-                            {word:"could",kor:"can의 과거형(할 수 있었다)"},
-                            {word:"pharmacist",kor:"약사"},
-                            {word:"firm",kor:"단단한"},
-                            {word:"refer",kor:"지시하다. 나타내다"},
-                            {word:"location",kor:"장소"},
-                            {word:"advertisement",kor:"광고"},
-                            {word:"leather",kor:"가죽"}
+                        idx: 1,
+                        date: "1",
+                        words: [
+                            { word: "boil", kor: "끌다. 끓이다" },
+                            { word: "gather", kor: "모으다" },
+                            { word: "machine", kor: "기계" },
+                            { word: "dry", kor: "마르다, 말리다" },
+                            { word: "flat", kor: "평평한" },
+                            { word: "press", kor: "누르다" },
+                            { word: "poo", kor: "(어린 아이의 말로)똥" },
+                            { word: "turn into", kor: "~으로 변하다" },
+                            { word: "mixture", kor: "혼합물" },
+                            { word: "chew up", kor: "씹다" },
+                            { word: "stinky", kor: "악취가 나는" },
+                            { word: "rhino", kor: "코뿔소" },
+                            { word: "still", kor: "여전히" },
+                            { word: "could", kor: "can의 과거형(할 수 있었다)" },
+                            { word: "pharmacist", kor: "약사" },
+                            { word: "firm", kor: "단단한" },
+                            { word: "refer", kor: "지시하다. 나타내다" },
+                            { word: "location", kor: "장소" },
+                            { word: "advertisement", kor: "광고" },
+                            { word: "leather", kor: "가죽" }
+                        ]
+                    },
+                    {
+                        idx: 2,
+                        date: "2",
+                        words: [
+                            { word: "인사는 세계 곳곳마다 달라요.", kor: "Greetings are different around the world." },
+                            { word: "언젠가, 여러분도 다른 나라를 방문할지 몰라요.", kor: "One day, you may visit another country." },
+                            { word: "사람들은 보통 나무에서 종이를 만들어요.", kor: "People usually make paper from wood." },
+                            { word: "가기 전에, 그들의 인사를 배우세요.", kor: "Before you go, learn their hello." },
+                            { word: "그들은 그들의 이빨로 그것들을 씹어요.", kor: "They chew them up with their teeth." },
+                            { word: "물을 끓여서 차를 좀 만들자.", kor: "Let's boil water and make some tea." },
+                            { word: "수건이 마를 때까지 기다려.", kor: "Wait until the towel dries." },
+                            { word: "그건 복잡한 수학 문제였어.", kor: "It was a complex math problem." },
+                            { word: "공룡들이 여전히 살아있다면 어땠을까요?", kor: "What if dinosaurs were still alive?" },
+                            { word: "우리는 중국 문화에 대해 배우고 있어요.", kor: "We are learning about Chinese culture." }
+
                         ]
                     }
 
@@ -178,54 +265,55 @@
                     //         {word:"",kor:""},
                     //         {word:"",kor:""},
                     //         {word:"",kor:""},
-                  
+
                     //     ]
                     // }
                 ]
 
             },
-            methods:{
-                update(){
+            methods: {
+                update() {
                     this.vWord = 3;
 
 
                     this.wView = [];
                     for (var i = 0; i < this.wdata[0].words.length; i++) {
                         var num = Math.floor(Math.random() * this.wdata[0].words.length);
-                        if(this.wView.indexOf(num) === -1){
+                        if (this.wView.indexOf(num) === -1) {
                             this.wView.push(num);
-                        }else{
+                        } else {
                             i--;
                         }
                     }
                 },
-                myClick(k){
+                myClick(k) {
                     //this.back = k;
 
-                   if(this.back == k){
-                       this.back = null
-                   }else{
-                    this.back = k;
-                   }
-                    
+                    if (this.back == k) {
+                        this.back = null
+                    } else {
+                        this.back = k;
+                    }
+
                     //document.querySelector(".view li").classList.remove("back");
-                        // if( this.backView == true){
-                        //     this.back = k;
-                        //     this.backView = false;
-                        // }else{
-                        //     document.querySelector(".view li").classList.remove("back");
-                            
-                        //     this.backView = true
-                        // }
-                    
+                    // if( this.backView == true){
+                    //     this.back = k;
+                    //     this.backView = false;
+                    // }else{
+                    //     document.querySelector(".view li").classList.remove("back");
+
+                    //     this.backView = true
+                    // }
+
 
 
                     //this.back = k;
-                    console.log( k )
+                    console.log(k)
                 }
             }
-          
+
         })
     </script>
 </body>
+
 </html>
